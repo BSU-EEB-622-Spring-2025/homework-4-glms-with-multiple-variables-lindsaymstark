@@ -31,6 +31,8 @@ mae
 #I chose a negative binomial over a poisson because the data was overdispersed.
 #The mae is 145.84. This error is high, but the data is highly variable, so to an extend this is to be expected.
 
+## ASW: Totally agree! The fit is not the best, but also the number of seedlings ranges from 0 to >2000, so I think this is a great assessment!
+
 
 ##1b)
 marginaleffects <- predictions(mod.nbin, newdata = datagrid(Treatment = unique(mistletoe_dat$Treatment)))
@@ -51,6 +53,8 @@ effect_size <- marginaleffects_preds$estimate[1] / marginaleffects_preds$estimat
 summary(mod.nbin)
 #From this model, it appears that mistletoe infection has a signficant effect on seedling density. Using the NBinom predictions, I see that unparasitized trees have 95% less seedlings.
 #The marginal effects plot shows this too, with large differences in mean number of seedlings between parasitized and unparasitized trees.
+
+## ASW: Excellent work! 
 
 
 ## 1c) 
@@ -82,6 +86,7 @@ effect_size_2012 <- marginaleffects_preds2$estimate[marginaleffects_preds2$Treat
 #In 2011, parasitized trees had a far greater effect on the number of seedlings underneath than in 2012.
 #The high rain in 2012 could have contributed to increased seedling density, rather than parasitization.
 
+## ASW: This is an excellent interpretation of the interaction! 30/30
 
 ## Question 2:
 
@@ -110,9 +115,13 @@ test_roc <- roc(treemortality_dat$mortality # Actual survival data
 #I think it would provide the most certainty if tree sizes are included in the glm.
 
 
+## ASW:  if they completely randomized thinning treatments in relationship to tree size, it will not bias the estimate of thinning's effect. The models should estimate a consistent coefficient for thinning of, regardless of whether tree size is included. That said, the authors may want to include tree size for other reasons!
+
 ## 2c) 
 
-mod <- glm(mortality~thinning*slope + thinning*roaddist , 
+## ASW: The interactions here aren't necessary to condition on roaddistance and slope (this model now communicates how the effect of thinnign varies by slope and road distance, which is why the "baseline" coefficient's pvalues got so high (it now represents the effect of thinning when slope = 0 and road dist = 0))... Additive terms (as I've adjusted here) should suffice for the research question and the concerns about confounding.
+
+mod <- glm(mortality~thinning + slope + roaddist , 
            data=treemortality_dat, family="binomial"(link="logit"))
 plot_predictions(mod, condition="slope") + 
   ylab("chance of mortality") +
@@ -134,3 +143,10 @@ summary(mod)
 #Distance from road increasing from 2.5-7.5 km increases mortality by ~50%
 #The effect of thinning changes from negative to positive although it's magnitude is similar. The certainty of the effect also decreases significantly.
 #It seems as though slope and distance from road were driving the "thinning" treatment. Therefore, the "thinning" treatment wasn't necessarily the predictor of survival. Instead, slope and distance from road were.
+
+
+## ASW: See comment above, but for the model you fit, this is a great interpretation!  The key thing here is that slope and distance from roads are biasing the effect of thinning in the first model, making it appear more effective than it is because of the fact that thinning treatments are more likely to occur in locations where fire severity is already lower (closer to roads, on shallower slopes). The predicted effect of thinning in the first model is a decrease in mortality from 73% to 29%, but in the revised version of the second model, this effect decreases (Mortality decreases from 54% to 29%)
+
+## 17/20
+
+## ASW: nice work! 47/50
